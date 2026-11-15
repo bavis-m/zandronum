@@ -1,0 +1,11 @@
+*.sw*
+*~
+build/
+protocolspec/generator/__pycache__/
+sqlite/sqlite-*.tar.gz
+sqlite/sqlite3.c
+sqlite/sqlite3.h
+sqlite/sqlite3ext.h
+src/gitinfo.h
+src/network/servercommands.cpp
+src/network/servercommands.h
