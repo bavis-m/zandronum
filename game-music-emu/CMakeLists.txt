@@ -85,7 +85,7 @@ if (CMAKE_COMPILER_IS_GNUCXX)
    if (__LIBGME_TEST_VISIBILITY)
       # get the gcc version
       # [JS] This fixes the issue for GCC 10 or later
-      exec_program(${CMAKE_CXX_COMPILER} ARGS --version OUTPUT_VARIABLE _gcc_version_info)
+      execute_process(COMMAND "${CMAKE_CXX_COMPILER}" --version OUTPUT_VARIABLE _gcc_version_info)
       string (REGEX MATCH "[0-9]+\\.[0-9]+\\.[0-9]+" _gcc_version "${_gcc_version_info}") 
 
       # gcc <4.1 had poor support for symbol visibility

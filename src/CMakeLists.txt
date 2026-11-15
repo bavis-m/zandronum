@@ -13,7 +13,7 @@ include( FindOpenGL )
 # [BL] I can't seem to find where ZDoom gets this
 include( CheckLibraryExists )
 # [TP] For the code generator
-find_package( PythonInterp 3 REQUIRED )
+find_package( Python 3 REQUIRED COMPONENTS Interpreter )
 
 if( NOT APPLE )
 	option( NO_ASM "Disable assembly code" OFF )
@@ -349,7 +349,9 @@ endif( FMOD_LIBRARY )
 
 # Search for FluidSynth
 
-find_package( FluidSynth )
+if (NOT NO_SOUND)
+	find_package( FluidSynth )
+endif()
 
 # Search for NASM
 
@@ -652,7 +654,10 @@ add_custom_target( revision_check ALL
 
 # Libraries ZDoom needs
 
-message( STATUS "Fluid synth libs: ${FLUIDSYNTH_LIBRARIES}" )
+if (NOT NO_SOUND)
+	message( STATUS "Fluid synth libs: ${FLUIDSYNTH_LIBRARIES}" )
+endif()
+
 set( ZDOOM_LIBS ${ZDOOM_LIBS} "${ZLIB_LIBRARIES}" "${JPEG_LIBRARIES}" "${BZIP2_LIBRARIES}" "${GME_LIBRARIES}" )
 # [BB] Without sound, we don't need FMOD.
 if ( NOT NO_SOUND )
@@ -677,14 +682,16 @@ if ( NOT NO_SOUND )
 	set( ZDOOM_LIBS ${ZDOOM_LIBS} ${OPUS_LIBRARIES} rnnoise )
 endif ( NOT NO_SOUND )
 
-if( NOT DYN_FLUIDSYNTH)
-	if( FLUIDSYNTH_FOUND )
-		set( ZDOOM_LIBS ${ZDOOM_LIBS} "${FLUIDSYNTH_LIBRARIES}" )
-		include_directories( "${FLUIDSYNTH_INCLUDE_DIR}" )
-	endif( FLUIDSYNTH_FOUND )
-else( NOT DYN_FLUIDSYNTH )
-	set( ZDOOM_LIBS ${ZDOOM_LIBS} ${CMAKE_DL_LIBS} )
-endif( NOT DYN_FLUIDSYNTH )
+if (NOT NO_SOUND)
+	if( NOT DYN_FLUIDSYNTH)
+		if( FLUIDSYNTH_FOUND )
+			set( ZDOOM_LIBS ${ZDOOM_LIBS} "${FLUIDSYNTH_LIBRARIES}" )
+			include_directories( "${FLUIDSYNTH_INCLUDE_DIR}" )
+		endif( FLUIDSYNTH_FOUND )
+	else( NOT DYN_FLUIDSYNTH )
+		set( ZDOOM_LIBS ${ZDOOM_LIBS} ${CMAKE_DL_LIBS} )
+	endif( NOT DYN_FLUIDSYNTH )
+endif()
 
 # OpenGL on OS X: GLEW include directory
 
@@ -821,11 +828,13 @@ else( SSE_MATTERS )
 	set( X86_SOURCES )
 endif( SSE_MATTERS )
 
-if( DYN_FLUIDSYNTH )
-	add_definitions( -DHAVE_FLUIDSYNTH -DDYN_FLUIDSYNTH )
-elseif( FLUIDSYNTH_FOUND )
-	add_definitions( -DHAVE_FLUIDSYNTH )
-endif( DYN_FLUIDSYNTH )
+if (NOT NO_SOUND)
+	if( DYN_FLUIDSYNTH )
+		add_definitions( -DHAVE_FLUIDSYNTH -DDYN_FLUIDSYNTH )
+	elseif( FLUIDSYNTH_FOUND )
+		add_definitions( -DHAVE_FLUIDSYNTH )
+	endif( DYN_FLUIDSYNTH )
+endif()
 
 # [BB] Only complile the gl sources, if we want GL support.
 if( NOT NO_GL )
@@ -1555,7 +1564,7 @@ endif ( RELEASE_WITH_DEBUG_FILE )
 # [TP] Generate the servercommands.cpp and servercommands.h files.
 include_directories(${CMAKE_BINARY_DIR})
 add_custom_target( protocolspec ALL
-	COMMAND ${PYTHON_EXECUTABLE}
+	COMMAND ${Python_EXECUTABLE}
 		"${CMAKE_SOURCE_DIR}/protocolspec/generator/codegenerator.py"
 		--spec "${CMAKE_SOURCE_DIR}/protocolspec/spec.txt"
 		--source "${CMAKE_SOURCE_DIR}/src/network/servercommands.cpp"

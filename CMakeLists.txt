@@ -2,6 +2,11 @@
 cmake_minimum_required( VERSION 3.5 )
 project(Zandronum)
 
+if (NOT MSVC)
+	add_compile_options(-Wno-implicit-fallthrough)
+	add_compile_options("$<$<COMPILE_LANGUAGE:CXX>:-Wno-template-id-cdtor>")
+endif()
+
 if( COMMAND cmake_policy )
 	cmake_policy( SET CMP0011 NEW )
 	cmake_policy( SET CMP0054 NEW )
