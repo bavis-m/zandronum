@@ -1458,6 +1458,12 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "SunOS")
 	set( ZDOOM_LIBS ${ZDOOM_LIBS} nsl socket)
 endif(${CMAKE_SYSTEM_NAME} STREQUAL "SunOS")
 
+find_library(FTS_LIBRARY fts)
+
+if (FTS_LIBRARY)
+	target_link_libraries( zdoom ${FTS_LIBRARY})
+endif()
+
 # [BB] Added GeoIP, huffman & sqlite
 target_link_libraries( zdoom ${ZDOOM_LIBS} gdtoa dumb lzma GeoIP sqlite3 )
 include_directories( .

@@ -9,5 +9,13 @@ if(NOT CMAKE_CROSSCOMPILING)
 	add_executable( zipdir
 		zipdir.c )
 	target_link_libraries( zipdir ${ZLIB_LIBRARIES} ${BZIP2_LIBRARIES} lzma )
+
+	include(CheckLibraryExists)
+
+	check_library_exists(fts fts_open "" HAVE_LIBFTS)
+	if(HAVE_LIBFTS)
+		target_link_libraries(zipdir fts)
+	endif()
+
 	set( CROSS_EXPORTS ${CROSS_EXPORTS} zipdir PARENT_SCOPE )
 endif(NOT CMAKE_CROSSCOMPILING)

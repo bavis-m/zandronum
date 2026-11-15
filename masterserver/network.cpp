@@ -54,6 +54,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <sys/types.h>
+#include <sys/time.h>
+#include <sys/select.h>
+#include <netinet/in.h>
 
 #include <ctype.h>
 #include <math.h>
