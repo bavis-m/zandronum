@@ -60,12 +60,14 @@ RUN apk add --no-cache \
     zstd \
     musl-fts \
     shadow \
-    su-exec
+    su-exec && \
+    mkdir /usr/share/GeoIP/
 
 WORKDIR /opt/zandronum
 
 COPY --from=builder /opt/zandronum/ /opt/zandronum/
 COPY --from=builder /src/zandronum/src/gitinfo.h /opt/zandronum/
+COPY GeoIP.dat /usr/share/GeoIP/GeoIP.dat
 
 # Run unprivileged.
 RUN addgroup -S zandronum \
